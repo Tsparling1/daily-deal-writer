@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Deal Writer — TMS Solutions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FAF6EE;
+      --dark: #1A1A18;
+      --gold: #C9A84C;
+      --gold-light: #E2C47A;
+      --gold-dim: rgba(201, 168, 76, 0.15);
+      --card-bg: #FFFFFF;
+      --border: rgba(26, 26, 24, 0.10);
+      --text-muted: rgba(26, 26, 24, 0.55);
+      --radius: 14px;
+      --shadow: 0 2px 16px rgba(26,26,24,0.08);
+      --shadow-hover: 0 6px 28px rgba(26,26,24,0.13);
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--dark);
+      padding: 20px 24px 22px;
+      text-align: center;
+    }
+
+    .header-brand {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .header-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(26px, 6vw, 34px);
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.15;
+    }
+
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 16px 48px;
+    }
+
+    /* ── INPUT CARD ── */
+    .input-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px 20px;
+      margin-bottom: 28px;
+      border: 1px solid var(--border);
+    }
+
+    .input-card h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+    }
+
+    textarea,
+    input[type="text"],
+    select {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--dark);
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    textarea:focus,
+    input[type="text"]:focus,
+    select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-dim);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--text-muted);
+      pointer-events: none;
+    }
+
+    select { cursor: pointer; padding-right: 36px; }
+
+    /* ── GENERATE BUTTON ── */
+    .btn-generate {
+      width: 100%;
+      padding: 15px 24px;
+      background: var(--gold);
+      color: var(--dark);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn-generate:hover:not(:disabled) {
+      background: var(--gold-light);
+      box-shadow: 0 4px 16px rgba(201,168,76,0.35);
+    }
+
+    .btn-generate:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-generate .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(26,26,24,0.25);
+      border-top-color: var(--dark);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    .btn-generate.loading .spinner { display: block; }
+    .btn-generate.loading .btn-text::after { content: '...'; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── ERROR MESSAGE ── */
+    .error-box {
+      display: none;
+      background: #FFF4F4;
+      border: 1.5px solid #E8AEAE;
+      border-radius: 9px;
+      padding: 14px 16px;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #B33A3A;
+      line-height: 1.5;
+    }
+    .error-box.visible { display: block; }
+
+    /* ── OUTPUTS SECTION ── */
+    .outputs-section {
+      display: none;
+    }
+    .outputs-section.visible { display: block; }
+
+    .outputs-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 16px;
+    }
+
+    .cards-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 680px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        align-items: start;
+      }
+    }
+
+    /* ── OUTPUT CARD ── */
+    .output-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .output-card:hover { box-shadow: var(--shadow-hover); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(201,168,76,0.05);
+    }
+
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--gold);
+    }
+
+    .card-platform {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: 0.02em;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .card-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--dark);
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 72px;
+    }
+
+    .char-count {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .char-count.over { color: #B33A3A; font-weight: 600; }
+
+    .card-footer {
+      padding: 0 16px 16px;
+    }
+
+    .btn-copy {
+      width: 100%;
+      padding: 9px 14px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-copy:hover {
+      border-color: var(--gold);
+      color: var(--dark);
+      background: var(--gold-dim);
+    }
+
+    .btn-copy.copied {
+      border-color: #4CAF50;
+      color: #2E7D32;
+      background: rgba(76,175,80,0.08);
+    }
+
+    .btn-copy svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── SKELETON LOADING ── */
+    .skeleton {
+      background: linear-gradient(90deg, #ece8e0 25%, #f5f1e8 50%, #ece8e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-line {
+      height: 13px;
+      margin-bottom: 9px;
+      border-radius: 6px;
+    }
+
+    .skeleton-line:last-child { width: 65%; margin-bottom: 0; }
+
+    /* ── CARD CONTENT ANIMATION ── */
+    .card-text {
+      animation: fadeUp 0.35s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      padding: 18px 16px;
+      font-size: 12px;
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    /* ── DIVIDER ── */
+    .gold-line {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 24px;
+      max-width: 200px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-brand">TMS Solutions</div>
+    <h1 class="header-title">Daily Deal Writer</h1>
+    <p class="header-subtitle">Generate social posts in seconds</p>
+  </header>
+
+  <main>
+    <div class="input-card">
+      <h2>Tell us about your deal</h2>
+
+      <div class="field">
+        <label for="deal">Your Deal or Special</label>
+        <textarea
+          id="deal"
+          placeholder="e.g. 20% off all oil changes this weekend, buy one get one free on all entrees tonight, free dessert with any dinner order over $30..."
+          maxlength="600"
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label for="businessName">Business Name</label>
+        <input
+          type="text"
+          id="businessName"
+          placeholder="e.g. Main Street Auto, The Rusty Fork, Coastal Cuts..."
+          maxlength="80"
+        />
+      </div>
+
+      <div class="field">
+        <label for="tone">Tone</label>
+        <div class="select-wrapper">
+          <select id="tone">
+            <option value="friendly">Friendly &amp; Casual</option>
+            <option value="professional">Professional</option>
+            <option value="urgent">Urgent &amp; Limited Time</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-generate" id="generateBtn" onclick="handleGenerate()">
+        <span class="spinner"></span>
+        <span class="btn-text">Generate My Posts</span>
+      </button>
+
+      <div class="error-box" id="errorBox"></div>
+    </div>
+
+    <div class="outputs-section" id="outputsSection">
+      <div class="gold-line"></div>
+      <h2 class="outputs-heading">Your Posts</h2>
+      <div class="cards-grid">
+
+        <!-- Facebook / Instagram -->
+        <div class="output-card" id="card-facebook">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+              </svg>
+            </div>
+            <span class="card-platform">Facebook &amp; Instagram</span>
+          </div>
+          <div class="card-body">
+            <div class="card-text" id="text-facebook">
+              <div class="skeleton skeleton-line" style="width:90%"></div>
+              <div class="skeleton skeleton-line" style="width:100%"></div>
+              <div class="skeleton skeleton-line" style="width:80%"></div>
+              <div class="skeleton skeleton-line"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-copy" id="copy-facebook" onclick="copyText('facebook')">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Google Business -->
+        <div class="output-card" id="card-google">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.805 10.023H12v4.011h5.671a4.84 4.84 0 0 1-2.092 3.17v2.632h3.386c1.981-1.825 3.125-4.515 3.125-7.594 0-.734-.067-1.442-.285-2.219zM12 22c2.698 0 4.96-.893 6.613-2.42l-3.386-2.631c-.894.6-2.037.95-3.227.95-2.484 0-4.59-1.677-5.34-3.93H3.19v2.716A9.996 9.996 0 0 0 12 22zM6.66 13.97A5.94 5.94 0 0 1 6.35 12c0-.685.12-1.35.31-1.97V7.314H3.19A9.99 9.99 0 0 0 2 12c0 1.615.38 3.14 1.19 4.686L6.66 13.97zM12 6.1c1.4 0 2.655.48 3.644 1.423l2.73-2.73C16.957 3.247 14.695 2 12 2A9.996 9.996 0 0 0 3.19 7.314l3.47 2.715C7.41 7.778 9.516 6.1 12 6.1z"/>
+              </svg>
+            </div>
+            <span class="card-platform">Google Business Post</span>
+          </div>
+          <div class="card-body">
+            <div class="card-text" id="text-google">
+              <div class="skeleton skeleton-line" style="width:95%"></div>
+              <div class="skeleton skeleton-line" style="width:85%"></div>
+              <div class="skeleton skeleton-line"></div>
+            </div>
+            <div class="char-count" id="chars-google"></div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-copy" id="copy-google" onclick="copyText('google')">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- SMS -->
+        <div class="output-card" id="card-sms">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+              </svg>
+            </div>
+            <span class="card-platform">SMS / Text Blast</span>
+          </div>
+          <div class="card-body">
+            <div class="card-text" id="text-sms">
+              <div class="skeleton skeleton-line" style="width:88%"></div>
+              <div class="skeleton skeleton-line"></div>
+            </div>
+            <div class="char-count" id="chars-sms"></div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-copy" id="copy-sms" onclick="copyText('sms')">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /cards-grid -->
+    </div><!-- /outputs-section -->
+  </main>
+
+  <footer>
+    Powered by TMS Solutions Group &nbsp;&middot;&nbsp;
+    <a href="https://tms-solutions-group.com" target="_blank" rel="noopener">tms-solutions-group.com</a>
+    &nbsp;&middot;&nbsp; 386-387-8620
+  </footer>
+
+  <script>
+    const generatedContent = { facebook: '', google: '', sms: '' };
+
+    async function handleGenerate() {
+      const deal = document.getElementById('deal').value.trim();
+      const businessName = document.getElementById('businessName').value.trim();
+      const tone = document.getElementById('tone').value;
+
+      // Validation
+      if (!deal) { showError('Please describe your deal or special.'); return; }
+      if (!businessName) { showError('Please enter your business name.'); return; }
+
+      clearError();
+      setLoading(true);
+      showOutputs();
+      resetCards();
+
+      let accumulated = '';
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deal, businessName, tone }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || `Server error ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const payload = line.slice(6).trim();
+            if (payload === '[DONE]') continue;
+
+            let parsed;
+            try { parsed = JSON.parse(payload); } catch { continue; }
+
+            if (parsed.error) throw new Error(parsed.error);
+            if (parsed.text) accumulated += parsed.text;
+          }
+        }
+
+        // Parse the accumulated JSON
+        const jsonStr = extractJSON(accumulated);
+        if (!jsonStr) throw new Error('Could not parse the AI response. Please try again.');
+
+        const result = JSON.parse(jsonStr);
+
+        if (!result.facebook || !result.google || !result.sms) {
+          throw new Error('Incomplete response from AI. Please try again.');
+        }
+
+        generatedContent.facebook = result.facebook;
+        generatedContent.google = result.google;
+        generatedContent.sms = result.sms;
+
+        renderCard('facebook', result.facebook);
+        renderCard('google', result.google, 300);
+        renderCard('sms', result.sms, 160);
+
+      } catch (err) {
+        console.error(err);
+        showError(err.message || 'Something went wrong. Please try again.');
+        resetCards();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function extractJSON(str) {
+      // Find the first { and last } to extract the JSON object
+      const start = str.indexOf('{');
+      const end = str.lastIndexOf('}');
+      if (start === -1 || end === -1 || end <= start) return null;
+      return str.slice(start, end + 1);
+    }
+
+    function renderCard(key, text, charLimit) {
+      const el = document.getElementById('text-' + key);
+      el.innerHTML = '';
+      const textNode = document.createTextNode(text);
+      el.appendChild(textNode);
+
+      if (charLimit) {
+        const count = text.length;
+        const countEl = document.getElementById('chars-' + key);
+        countEl.textContent = `${count} / ${charLimit} characters`;
+        countEl.className = 'char-count' + (count > charLimit ? ' over' : '');
+      }
+    }
+
+    function resetCards() {
+      ['facebook', 'google', 'sms'].forEach(key => {
+        const el = document.getElementById('text-' + key);
+        el.innerHTML = `
+          <div class="skeleton skeleton-line" style="width:90%"></div>
+          <div class="skeleton skeleton-line" style="width:100%"></div>
+          <div class="skeleton skeleton-line"></div>
+        `;
+        const countEl = document.getElementById('chars-' + key);
+        if (countEl) countEl.textContent = '';
+        resetCopyBtn(key);
+      });
+    }
+
+    async function copyText(key) {
+      const text = generatedContent[key];
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copy-' + key);
+        btn.classList.add('copied');
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Copied!
+        `;
+        setTimeout(() => resetCopyBtn(key), 2200);
+      } catch {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+
+        const btn = document.getElementById('copy-' + key);
+        btn.classList.add('copied');
+        btn.querySelector('svg').outerHTML = '';
+        setTimeout(() => resetCopyBtn(key), 2200);
+      }
+    }
+
+    function resetCopyBtn(key) {
+      const btn = document.getElementById('copy-' + key);
+      if (!btn) return;
+      btn.classList.remove('copied');
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copy
+      `;
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('generateBtn');
+      if (loading) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+        btn.querySelector('.btn-text').textContent = 'Generating';
+      } else {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        btn.querySelector('.btn-text').textContent = 'Generate My Posts';
+      }
+    }
+
+    function showOutputs() {
+      document.getElementById('outputsSection').classList.add('visible');
+      // Smooth scroll to outputs on mobile
+      if (window.innerWidth < 680) {
+        setTimeout(() => {
+          document.getElementById('outputsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      box.textContent = msg;
+      box.classList.add('visible');
+    }
+
+    function clearError() {
+      const box = document.getElementById('errorBox');
+      box.textContent = '';
+      box.classList.remove('visible');
+    }
+
+    // Allow Enter in business name field to submit
+    document.getElementById('businessName').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleGenerate();
+    });
+  </script>
+</body>
+</html>
